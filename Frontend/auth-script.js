@@ -1,10 +1,5 @@
 // Authentication JavaScript
-const API_BASE = "https://smart-link-hub.onrender.com/api";
-alert("auth-script LOADED");
-
-
-
-
+const API_BASE = "https://smart-link-hub-nsve.onrender.com/api";
 // Form toggle functionality
 function toggleForm(formName) {
   document.querySelectorAll(".form-tab").forEach(tab => {
