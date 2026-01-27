@@ -1,8 +1,9 @@
 // Public Smart Link Hub Viewer
+const API_BASE = "https://smart-link-hub.onrender.com/api";
 
 async function loadHub(hubId) {
   try {
-    const response = await fetch(`http://localhost:3000/hubs/${hubId}`);
+  const response = await fetch(`${API_BASE}/hubs/${hubId}`);
     if (!response.ok) {
       showError("Hub not found");
       return;
