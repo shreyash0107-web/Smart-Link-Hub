@@ -49,41 +49,38 @@
     <div class="error-msg" id="signin-general-error"></div>
   </form>
 </div>
+<!-- Create Account Form -->
+<div id="signup-form" class="form-tab">
+  <form class="auth-form" onsubmit="handleSignUp(event)">
+    <h2>Create Account</h2>
 
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" id="signup-name" required />
+    </div>
 
-      <!-- Sign Up Form -->
-      <form id="signup" class="auth-form" onsubmit="handleSignUp(event)">
-        <h2>Create Account</h2>
-        <form id="signup" class="auth-form">
-          <div class="form-group">
-            <label for="signup-name">Full Name</label>
-            <input type="text" id="signup-name" placeholder="John Doe" required>
-            <span class="error-msg" id="signup-name-error"></span>
-          </div>
-          <div class="form-group">
-            <label for="signup-email">Email Address</label>
-            <input type="email" id="signup-email" placeholder="your@email.com" required>
-            <span class="error-msg" id="signup-email-error"></span>
-          </div>
-          <div class="form-group">
-            <label for="signup-password">Password</label>
-            <input type="password" id="signup-password" placeholder="••••••••" required>
-            <span class="error-msg" id="signup-password-error"></span>
-          </div>
-          <div class="form-group">
-            <label for="signup-confirm">Confirm Password</label>
-            <input type="password" id="signup-confirm" placeholder="••••••••" required>
-            <span class="error-msg" id="signup-confirm-error"></span>
-          </div>
-          <div class="form-group">
-            <button type="submit" class="btn btn-primary btn-block">Create Account</button>
-          </div>
-          <div class="auth-links">
-            <a href="#" onclick="toggleForm('signin')" class="link">Already have an account? Sign In</a>
-          </div>
-          <div class="error-msg" id="signup-general-error"></div>
-        </form>
-      </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="signup-email" required />
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="signup-password" required />
+    </div>
+
+    <div class="form-group">
+      <label>Confirm Password</label>
+      <input type="password" id="signup-confirm" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block">
+      Create Account
+    </button>
+
+    <div class="error-msg" id="signup-general-error"></div>
+  </form>
+</div>
 
       <!-- Forgot Password Form -->
       <div id="forgot-form" class="form-tab">
