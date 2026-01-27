@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require("uuid");
 const rateLimit = require("express-rate-limit");
 const crypto = require("crypto");
 const { initializeDatabase, query, get, all } = require("./database");
+initializeDatabase();
 const RuleEngine = require("./ruleEngine");
 
 const app = express();
@@ -12,7 +13,7 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "../Frontend")));
+app.use(express.urlencoded({ extended: true }));
 
 // Rate limiting
 const generalLimiter = rateLimit({
@@ -181,6 +182,8 @@ app.post("/api/auth/signup", (req, res) => {
 
 // Sign In
 app.post("/api/auth/signin", (req, res) => {
+  console.log("SIGNUP BODY:", req.body);
+
   try {
     const { email, password } = req.body;
 
