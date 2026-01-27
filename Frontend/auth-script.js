@@ -1,5 +1,6 @@
 // Authentication JavaScript
-const API_BASE = "http://localhost:3000/api";
+const API_BASE = "https://smart-link-hub.onrender.com/api";
+
 
 // Form toggle functionality
 function toggleForm(formName) {
@@ -66,8 +67,8 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ==================== SIGN IN ====================
-async function handleSignIn(e) {
-  e.preventDefault();
+async function handleSignIn(event) {
+  event.preventDefault();
   clearErrors();
 
   const email = document.getElementById("signin-email").value.trim();
