@@ -120,7 +120,8 @@ async function handleSignIn(event) {
 
   // ✅ SUCCESS
   localStorage.setItem("token", data.token);
-  window.location.href = "admin.html";
+  window.location.href = "/admin.html";
+
 
 } catch (err) {
   console.error("Login error:", err);

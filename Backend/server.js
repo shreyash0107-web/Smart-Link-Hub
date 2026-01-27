@@ -14,6 +14,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// Serve frontend files
+app.use(express.static(path.join(__dirname, "../Frontend")));
+
+// Default route → open login page
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../Frontend/login.html"));
+});
+
 // Serve frontend correctly on Render
 const FRONTEND_PATH = path.join(process.cwd(), "Frontend");
 
