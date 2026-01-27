@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Link Hub - Admin Dashboard</title>
+  <link rel="stylesheet" href="admin-style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <h1>🔗 Smart Link Hub Generator</h1>
+        <p>Create, manage, and analyze dynamic link hubs</p>
+      </div>
+      <div class="header-actions">
+        <div class="user-info">
+          <span id="user-name">User</span>
+          <button class="btn btn-sm" onclick="logout()" style="background: rgba(255,255,255,0.2); color: white; border: none; margin-left: 15px;">Logout</button>
+          <button class="btn btn-sm" onclick="showAccountSettings()" style="background: rgba(255,255,255,0.2); color: white; border: none; margin-left: 8px;" title="Account Settings">⚙️</button>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode">🌙</button>
+      </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="hubs">My Hubs</button>
+      <button class="nav-tab" data-tab="create">Create Hub</button>
+      <button class="nav-tab" data-tab="manage">Manage</button>
+      <button class="nav-tab" data-tab="analytics">Analytics</button>
+    </nav>
+
+    <main class="main-content">
+      <!-- Hubs Tab -->
+      <section id="hubs-tab" class="tab-content active">
+        <div class="section-header">
+          <h2>My Link Hubs</h2>
+        </div>
+        <div id="hubs-list" class="hubs-grid"></div>
+        <div id="empty-state" class="empty-state">
+          <p>No link hubs yet. <a href="#" onclick="switchTab('create')">Create your first hub</a></p>
+        </div>
+      </section>
+
+      <!-- Create Hub Tab -->
+      <section id="create-tab" class="tab-content">
+        <div class="section-header">
+          <h2>Create New Hub</h2>
+        </div>
+        <form id="hub-form" class="form-container">
+          <div class="form-group">
+            <label>Hub Title *</label>
+            <input type="text" id="hub-title" placeholder="e.g., My Personal Links" required>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="hub-description" placeholder="Describe your link hub" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Theme</label>
+            <select id="hub-theme">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="auto">Auto (System)</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Create Hub</button>
+        </form>
+      </section>
+
+      <!-- Manage Tab -->
+      <section id="manage-tab" class="tab-content">
+        <div class="section-header">
+          <h2>Manage Hub</h2>
+          <div class="form-group inline">
+            <label>Select Hub:</label>
+            <select id="manage-hub-select"></select>
+          </div>
+        </div>
+
+        <div id="manage-content" class="manage-container" style="display: none;">
+          <!-- Hub Details -->
+          <div class="card">
+            <h3>Hub Details</h3>
+            <div class="hub-info">
+              <p><strong>Hub ID:</strong> <code id="hub-id"></code> <button class="copy-btn" onclick="copyToClipboard(document.getElementById('hub-id').textContent)">Copy</button></p>
+              <p><strong>Public URL:</strong> <code id="hub-url"></code> <button class="copy-btn" onclick="copyToClipboard(document.getElementById('hub-url').textContent)">Copy</button></p>
+              <p><strong>Total Visits:</strong> <span id="hub-visits">0</span></p>
+            </div>
+          </div>
+
+          <!-- Links Management -->
+          <div class="card">
+            <h3>Manage Links</h3>
+            <form id="link-form" class="form-row">
+              <input type="text" id="link-name" placeholder="Link name" required>
+              <input type="url" id="link-url" placeholder="URL (https://...)" required>
+              <button type="submit" class="btn btn-sm btn-success">+ Add Link</button>
+            </form>
+            <div id="links-list" class="links-list"></div>
+          </div>
+
+          <!-- Rules Configuration -->
+          <div class="card">
+            <h3>Display Rules</h3>
+            <div class="rules-info">
+              <p>Configure conditional logic to show/prioritize links based on:</p>
+              <ul>
+                <li>⏰ Time of day (working hours, specific times)</li>
+                <li>📱 Device type (mobile vs desktop)</li>
+                <li>🌍 Location (country, region)</li>
+                <li>📊 Performance (auto-promote top links)</li>
+              </ul>
+            </div>
+            <div id="rules-container" class="rules-container"></div>
+            <button id="add-rule-btn" class="btn btn-sm btn-secondary">+ Add Rule</button>
+          </div>
+      </section>
+
+      <!-- Analytics Tab -->
+      <section id="analytics-tab" class="tab-content">
+        <div class="section-header">
+          <h2>Hub Analytics</h2>
+          <div class="form-group inline">
+            <label>Select Hub:</label>
+            <select id="analytics-hub-select"></select>
+          </div>
+        </div>
+
+        <div id="analytics-content" class="analytics-container" style="display: none;">
+          <!-- Summary Stats -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" id="stat-visits">0</div>
+              <div class="stat-label">Total Visits</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="stat-clicks">0</div>
+              <div class="stat-label">Total Clicks</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="stat-top-link">-</div>
+              <div class="stat-label">Top Link</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="stat-ctr">0%</div>
+              <div class="stat-label">Click-Through Rate</div>
+            </div>
+          </div>
+
+          <!-- Charts Row 1 -->
+          <div class="charts-row">
+            <!-- Top Links Bar Chart -->
+            <div class="card chart-card">
+              <h3>🔝 Top Performing Links</h3>
+              <div id="top-links-chart-container" style="position: relative; height: 300px;">
+                <canvas id="topLinksChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Click Distribution Pie Chart -->
+            <div class="card chart-card">
+              <h3>📊 Click Distribution</h3>
+              <div id="click-distribution-chart-container" style="position: relative; height: 300px;">
+                <canvas id="clickDistributionChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Row 2 -->
+          <div class="charts-row">
+            <!-- Visits Overview Line Chart -->
+            <div class="card chart-card-full">
+              <h3>📈 Performance Overview</h3>
+              <div id="visits-chart-container" style="position: relative; height: 280px;">
+                <canvas id="visitsChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Link Details Table -->
+          <div class="card">
+            <h3>📋 Link Performance Details</h3>
+            <div id="links-analytics-table" class="table-container"></div>
+          </div>
+
+          <!-- Export -->
+          <div class="card">
+            <button id="export-analytics" class="btn btn-primary">📥 Export Analytics Report</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Rule Configuration Modal -->
+  <div id="rule-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h2>Add Display Rule</h2>
+      <form id="rule-form">
+        <div class="form-group">
+          <label>Rule Type *</label>
+          <select id="rule-type" required>
+            <option value="">Select rule type...</option>
+            <option value="time-based">⏰ Time-Based (working hours, specific times)</option>
+            <option value="device-based">📱 Device-Based (mobile vs desktop)</option>
+            <option value="location-based">🌍 Location-Based (country, region)</option>
+            <option value="performance-based">📊 Performance-Based (top performers)</option>
+          </select>
+        </div>
+
+        <!-- Time-Based Config -->
+        <div id="time-config" class="rule-config" style="display: none;">
+          <div class="form-group">
+            <label>Time Rule Type</label>
+            <select id="time-rule-type">
+              <option value="working-hours">Working Hours (9 AM - 5 PM)</option>
+              <option value="specific-times">Specific Time Range</option>
+            </select>
+          </div>
+          <div id="specific-time-fields" style="display: none;">
+            <div class="form-row">
+              <input type="number" min="0" max="23" placeholder="Start hour" id="time-start">
+              <input type="number" min="0" max="23" placeholder="End hour" id="time-end">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Links to show *</label>
+            <select id="time-links" multiple></select>
+          </div>
+        </div>
+
+        <!-- Device-Based Config -->
+        <div id="device-config" class="rule-config" style="display: none;">
+          <div class="form-group">
+            <label>Mobile Links</label>
+            <select id="mobile-links" multiple></select>
+          </div>
+          <div class="form-group">
+            <label>Desktop Links</label>
+            <select id="desktop-links" multiple></select>
+          </div>
+        </div>
+
+        <!-- Location-Based Config -->
+        <div id="location-config" class="rule-config" style="display: none;">
+          <div class="form-group">
+            <label>Location Type</label>
+            <select id="location-type">
+              <option value="country">Country</option>
+              <option value="region">Region</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Countries/Regions (comma-separated)</label>
+            <input type="text" id="location-values" placeholder="US, UK, CA...">
+          </div>
+          <div class="form-group">
+            <label>Links to show</label>
+            <select id="location-links" multiple></select>
+          </div>
+        </div>
+
+        <!-- Performance-Based Config -->
+        <div id="performance-config" class="rule-config" style="display: none;">
+          <div class="form-group">
+            <label>Show top N links</label>
+            <input type="number" id="top-n" min="1" max="10" value="3">
+          </div>
+          <div class="form-group">
+            <label>Minimum clicks to qualify</label>
+            <input type="number" id="min-clicks" min="0" value="0">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Rule</button>
+        <button type="button" class="btn btn-secondary" onclick="closeRuleModal()">Cancel</button>
+        <button disabled title="Coming soon">Delete Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Account Settings Modal -->
+  <div id="account-settings-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeAccountSettings()">&times;</span>
+      <h2>Account Settings</h2>
+      
+      <div class="account-settings">
+        <div class="settings-section">
+          <h3>Account Information</h3>
+          <div class="setting-item">
+            <label>Username:</label>
+            <p id="setting-username" style="color: var(--text-dark); font-weight: 600;">Loading...</p>
+          </div>
+          <div class="setting-item">
+            <label>Email:</label>
+            <p id="setting-email" style="color: var(--text-dark); font-weight: 600;">Loading...</p>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin-script.js"></script>
+</body>
+</html>
