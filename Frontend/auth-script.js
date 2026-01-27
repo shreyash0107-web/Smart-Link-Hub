@@ -1,5 +1,7 @@
 // Authentication JavaScript
 const API_BASE = "https://smart-link-hub.onrender.com/api";
+alert("auth-script LOADED");
+
 
 
 
