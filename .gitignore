@@ -1,10 +1,5 @@
 node_modules/
 .env
 .env.local
+.env.production
 .env.production.local
-.DS_Store
-*.log
-.vercel/
-.next/
-build/
-dist/
