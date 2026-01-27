@@ -2,6 +2,7 @@
 const API_BASE = "https://smart-link-hub.onrender.com/api";
 
 
+
 // Form toggle functionality
 function toggleForm(formName) {
   document.querySelectorAll(".form-tab").forEach(tab => {
@@ -103,6 +104,32 @@ async function handleSignIn(event) {
       showGeneralError("signin", data.error || "Invalid credentials. Please try again.");
       return;
     }
+    try {
+  const response = await fetch(`${API_BASE}/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email, password })
+  });
+
+  const data = await response.json();
+  console.log("LOGIN RESPONSE:", response.status, data);
+
+  if (!response.ok) {
+    showError("signin-general", data.error || "Invalid credentials");
+    return;
+  }
+
+  // ✅ SUCCESS
+  localStorage.setItem("token", data.token);
+  window.location.href = "admin.html";
+
+} catch (err) {
+  console.error("Login error:", err);
+  showError("signin-general", "Server error. Try again.");
+}
+
 
     // Save token and redirect
     localStorage.setItem("authToken", data.token);
@@ -131,6 +158,31 @@ async function handleSignUp(e) {
   const confirm = document.getElementById("signup-confirm").value;
 
   // Validation
+  try {
+  const response = await fetch(`${API_BASE}/auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ name, email, password })
+  });
+
+  const data = await response.json();
+  console.log("SIGNUP RESPONSE:", response.status, data);
+
+  if (!response.ok) {
+    showError("signup-general", data.error || "Signup failed");
+    return;
+  }
+
+  alert("Account created! Please sign in.");
+  toggleForm("signin");
+
+} catch (err) {
+  console.error("Signup error:", err);
+  showError("signup-general", "Server error. Try again.");
+}
+
   if (!name) {
     showError("signup-name", "Full name is required");
     return;
