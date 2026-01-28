@@ -605,13 +605,7 @@ app.get("/api/hubs/:hubId/analytics", (req, res) => {
     if (!hub) {
       return res.status(404).json({ error: "Hub not found" });
     }
-
-    const hubAnalytics = all(
-      `SELECT * FROM analytics WHERE hub_id = ? ORDER BY timestamp DESC LIMIT 30`,
-      [hubId]
-    );
-
-    const links = all(`SELECT * FROM links WHERE hub_id = ?`, [hubId]);
+     const links = all(`SELECT * FROM links WHERE hub_id = ?`, [hubId]);
     const linkAnalytics = all(
       `SELECT * FROM link_analytics WHERE hub_id = ? ORDER BY timestamp DESC LIMIT 100`,
       [hubId]
@@ -626,7 +620,11 @@ app.get("/api/hubs/:hubId/analytics", (req, res) => {
       .slice(0, 5);
 
     const totalVisits = hub.total_visits || 0;
-    const totalClicks = links.reduce((sum, l) => sum + l.clicks, 0);
+    const totalClicks = linkAnalytics.reduce(
+  (sum, a) => sum + a.clicks,
+  0
+);
+
 
     res.json({
       success: true,
