@@ -23,7 +23,7 @@ function displaySampleHub(hubData) {
   const linksContainer = document.getElementById("links");
   
   linksContainer.innerHTML = hubData.links.map(link => `
-    <a href="${link.url}" class="link" target="_blank">
+    <a href="/r/${link.id}" target="_blank">
       <div class="link-icon">🔗</div>
       <div class="link-info">
         <h3>${link.name}</h3>
