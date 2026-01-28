@@ -649,6 +649,50 @@ app.get("/api/hubs/:hubId/analytics", (req, res) => {
 // ==================== PUBLIC ENDPOINTS ====================
 
 // Get public link hub page
+// Redirect + count link click
+app.get("/r/:hubId/:linkId", (req, res) => {
+  try {
+    const { hubId, linkId } = req.params;
+
+    // 1. Get the link
+    const link = get(
+      "SELECT * FROM links WHERE id = ? AND hub_id = ?",
+      [linkId, hubId]
+    );
+
+    if (!link) {
+      return res.status(404).send("Link not found");
+    }
+
+    // 2. Increment link clicks
+    query(
+      "UPDATE links SET clicks = clicks + 1 WHERE id = ?",
+      [linkId]
+    );
+
+    // 3. Insert link analytics
+    query(
+      `INSERT INTO link_analytics (hub_id, link_id, clicks, timestamp)
+       VALUES (?, ?, 1, CURRENT_TIMESTAMP)`,
+      [hubId, linkId]
+    );
+
+    // 4. Increment hub visits
+    query(
+      "UPDATE link_hubs SET total_visits = total_visits + 1 WHERE id = ?",
+      [hubId]
+    );
+
+    // 5. Redirect to actual URL
+    res.redirect(link.url);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
+// Get public link hub page
 app.get("/hubs/:hubId", (req, res) => {
   try {
     const { hubId } = req.params;
@@ -656,28 +700,6 @@ app.get("/hubs/:hubId", (req, res) => {
     const hub = get(`SELECT * FROM link_hubs WHERE id = ?`, [hubId]);
     if (!hub) {
       return res.status(404).json({ error: "Hub not found" });
-    }
-
-    const newVisits = (hub.total_visits || 0) + 1;
-    query(`UPDATE link_hubs SET total_visits = ? WHERE id = ?`, [newVisits, hubId]);
-
-    const today = new Date().toISOString().split("T")[0];
-    const existing = get(
-      `SELECT * FROM analytics WHERE hub_id = ? AND date = ?`,
-      [hubId, today]
-    );
-
-    if (existing) {
-      query(
-        `UPDATE analytics SET visits = visits + 1 WHERE hub_id = ? AND date = ?`,
-        [hubId, today]
-      );
-    } else {
-      const analyticsId = uuidv4();
-      query(
-        `INSERT INTO analytics (id, hub_id, date, visits, timestamp) VALUES (?, ?, ?, 1, ?)`,
-        [analyticsId, hubId, today, Date.now()]
-      );
     }
 
     let links = all(`SELECT * FROM links WHERE hub_id = ?`, [hubId]);
@@ -693,8 +715,8 @@ app.get("/hubs/:hubId", (req, res) => {
         description: hub.description,
         theme: hub.theme,
         links,
-        total_visits: newVisits,
-        visits: newVisits
+        total_visits: hub.total_visits || 0,
+        visits: hub.total_visits || 0
       }
     });
   } catch (error) {
