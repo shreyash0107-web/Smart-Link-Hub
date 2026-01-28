@@ -41,22 +41,6 @@ function logout() {
   localStorage.removeItem("hubs");
   window.location.href = "login.html";
 }
-
-// ==================== ACCOUNT SETTINGS ====================
-function showAccountSettings() {
-  const modal = document.getElementById("account-settings-modal");
-  const userName = localStorage.getItem("userName");
-  const userEmail = localStorage.getItem("userEmail");
-  
-  document.getElementById("setting-username").textContent = userName || "User";
-  document.getElementById("setting-email").textContent = userEmail || "email@example.com";
-  
-  modal.style.display = "flex";
-}
-
-function closeAccountSettings() {
-  document.getElementById("account-settings-modal").style.display = "none";
-}
 // ==================== THEME TOGGLE ====================
 function setupThemeToggle() {
   const toggle = document.getElementById("theme-toggle");
